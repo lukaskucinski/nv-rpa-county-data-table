@@ -24,9 +24,14 @@
             width: 100%;
         }
 
+        .table-container {
+            width: 100%;
+            overflow-x: auto; /* Enable horizontal scrolling */
+        }
+
         table {
             width: 100%;
-            margin-top: 20px;
+            min-width: 800px; /* Set a minimum width for the table */
             border-collapse: collapse;
         }
 
@@ -56,35 +61,37 @@
 </head>
 <body>
 
-    <table id="countyTable" class="display">
-        <thead>
-            <tr>
-                <th>County Name</th>
-                <th>RPA Count</th>
-                <th>Tribal RPAs</th>
-                <th>High Cost RPAs</th>
-                <th>CAI Count</th>
-                <th>BSL Count</th>
-                <th>Reference Price</th>
-                <th>Subsidy</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Rows will be inserted here by JavaScript -->
-        </tbody>
-        <tfoot>
-            <tr>
-                <th>Totals</th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-            </tr>
-        </tfoot>
-    </table>
+    <div class="table-container">
+        <table id="countyTable" class="display">
+            <thead>
+                <tr>
+                    <th>County Name</th>
+                    <th>RPA Count</th>
+                    <th>Tribal RPAs</th>
+                    <th>High Cost RPAs</th>
+                    <th>CAI Count</th>
+                    <th>BSL Count</th>
+                    <th>Reference Price</th>
+                    <th>Subsidy</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Rows will be inserted here by JavaScript -->
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th>Totals</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
 
     <!-- Include jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
