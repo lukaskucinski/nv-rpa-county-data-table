@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>County Data Table</title>
+    <!-- Include DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <style>
+        body {
+            font-family: 'Verdana', sans-serif;
+            color: #333;
+            margin: 0; /* Remove default margin to control the layout more precisely */
+        }
+
+        #countyTable_wrapper {
+            width: calc(100% - 40px); /* Adjust width to allow for 20px margin on each side */
+            margin: 40px auto 0 auto; /* Center and add 40px of space at the top */
+        }
+
+        #countyTable_filter {
+            text-align: center;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            color: #333;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        tfoot tr th {
+            font-weight: bold;
+            text-align: left;
+            background-color: #f2f2f2;
+        }
+
+        html {
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <table id="countyTable" class="display">
+        <thead>
+            <tr>
+                <th>County Name</th>
+                <th>RPA Count</th>
+                <th>Tribal RPAs</th>
+                <th>High Cost RPAs</th>
+                <th>CAI Count</th>
+                <th>BSL Count</th>
+                <th>Reference Price</th>
+                <th>Subsidy</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Rows will be inserted here by JavaScript -->
+        </tbody>
+        <tfoot>
+            <tr>
+                <th>Totals</th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+        </tfoot>
+    </table>
+
+    <!-- Include jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Include DataTables JS -->
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const data = [
+                ["Carson City", 11, 1, 1, 19, 733, 4130393.23, 3097794.93],
+                ["Churchill", 45, 2, 0, 1, 1367, 19133817.95, 14350363.49],
+                ["Clark", 77, 4, 18, 204, 7459, 57510708.99, 43133031.82],
+                ["Douglas", 53, 3, 0, 15, 2230, 14861373.02, 11146029.82],
+                ["Elko", 173, 4, 0, 34, 4389, 77332177.44, 57999133.12],
+                ["Esmeralda", 20, 0, 20, 2, 782, 24707668.33, 18530751.25],
+                ["Eureka", 65, 0, 51, 7, 939, 20986691.53, 15740018.66],
+                ["Humboldt", 101, 3, 0, 16, 2413, 43860336.86, 32895252.68],
+                ["Lander", 68, 1, 59, 7, 1505, 19989552.81, 14992164.62],
+                ["Lincoln", 4, 0, 0, 11, 0, 153872.05, 115404.04],
+                ["Lyon", 37, 1, 5, 16, 3124, 27380590.21, 20535442.68],
+                ["Mineral", 26, 1, 25, 4, 1069, 12689005.34, 9516754.02],
+                ["Nye", 127, 4, 24, 26, 15744, 66608153.12, 49956114.84],
+                ["Pershing", 49, 0, 40, 4, 794, 16194628.24, 12145971.19],
+                ["Storey", 10, 1, 0, 2, 1328, 10086532.01, 7564899.02],
+                ["Washoe", 83, 3, 11, 86, 3902, 66935954.02, 50201965.54],
+                ["White Pine", 95, 3, 91, 12, 4663, 50723472.92, 38042604.7]
+            ];
+
+            const tableBody = document.querySelector('#countyTable tbody');
+            data.forEach(row => {
+                const tr = document.createElement('tr');
+
+                row.forEach((cell, index) => {
+                    const td = document.createElement('td');
+
+                    if (index >= 6) {
+                        // Format the Reference Price and Subsidy columns as currency rounded to the nearest dollar
+                        td.textContent = `$${Math.round(parseFloat(cell)).toLocaleString('en-US')}`;
+                    } else if (typeof cell === 'number') {
+                        // Add commas for thousands in other numeric columns
+                        td.textContent = cell.toLocaleString('en-US');
+                    } else {
+                        td.textContent = cell;
+                    }
+                    tr.appendChild(td);
+                });
+
+                tableBody.appendChild(tr);
+            });
+
+            const table = $('#countyTable').DataTable({
+                "paging": false,          // Disable pagination controls
+                "searching": true,        // Keep search box
+                "ordering": true,
+                "info": true,             // Keep the "Showing X to Y of Z entries"
+                "autoWidth": false,
+                "footerCallback": function (row, data, start, end, display) {
+                    var api = this.api();
+
+                    // Function to remove formatting and get integer data for summation
+                    var intVal = function (i) {
+                        return typeof i === 'string' ?
+                            i.replace(/[\$,]/g, '')*1 :
+                            typeof i === 'number' ?
+                                i : 0;
+                    };
+
+                    // Calculate total for each column and update footer
+                    [1, 2, 3, 4, 5, 6, 7].forEach(function (colIndex) {
+                        var total = api
+                            .column(colIndex)
+                            .data()
+                            .reduce(function (a, b) {
+                                return intVal(a) + intVal(b);
+                            }, 0);
+
+                        var pageTotal = api
+                            .column(colIndex, { page: 'current'})
+                            .data()
+                            .reduce(function (a, b) {
+                                return intVal(a) + intVal(b);
+                            }, 0);
+
+                        if (colIndex >= 6) {
+                            // Format Reference Price and Subsidy as currency
+                            $(api.column(colIndex).footer()).html(
+                                '$' + Math.round(pageTotal).toLocaleString('en-US')
+                            );
+                        } else {
+                            // Format other numeric columns with commas
+                            $(api.column(colIndex).footer()).html(
+                                pageTotal.toLocaleString('en-US')
+                            );
+                        }
+                    });
+                }
+            });
+
+            // Center the search box after the table has been initialized
+            $('#countyTable_filter').css({
+                'width': '100%',
+                'text-align': 'center'
+            });
+            $('#countyTable_filter label').css({
+                'display': 'inline-block',
+                'text-align': 'center',
+                'width': '100%'
+            });
+        });
+    </script>
+
+</body>
+</html>
