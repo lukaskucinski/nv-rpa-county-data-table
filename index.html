@@ -7,11 +7,20 @@
     <!-- Include DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <style>
+        @font-face {
+            font-family: 'Avenir Next';
+            src: url('path/to/AvenirNext-Regular.woff2') format('woff2'),
+                 url('path/to/AvenirNext-Regular.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+
         body {
-            font-family: 'Verdana', sans-serif;
+            font-family: 'Avenir Next', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
             color: #333;
             margin: 0; /* Remove default margin to control the layout more precisely */
         }
+
 
         #countyTable_wrapper {
             width: calc(100% - 40px); /* Adjust width to allow for 20px margin on each side */
